@@ -1,0 +1,518 @@
+﻿﻿
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html
+	xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<style>
+
+        div.padded {
+            padding-top: 0px;
+            padding-right: 100px;
+            padding-bottom: 0.25in;
+            padding-left: 100px;
+        }
+    </style>
+		<title>CS 194-26 Project 1</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<link rel="stylesheet" type="text/css" href="style.css" media="screen" />
+	</head>
+	<body>
+		<h1 align="middle">Project 2</h1>
+		<h1 align="middle"Fun with Filters and Frequencies!</h1>
+		<h2 align="middle">Michael Wang</h2>
+		<h3>Overview</h3>
+		<p>
+        This project attempts to utilize convolutions to create and optimize an assortment of visual effects on images. These effects range from edge detection to image sharpening, to hybrid images and image blending.
+        </p>
+		<h3>Part 1</h3>
+		<h4>Part 1.1</h4>
+		<p>
+        
+    </p>
+		<h3>
+        Image Results 
+    </h3>
+	<p>
+        To detect edges in an image, we can convolve the image with an x and y gradient filter. 
+    </p>
+		<div align="middle">
+			<table style="width=100%">
+				<tr>
+					<td>					
+    					<img src="final_images/cameraman_xgrad.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Cameraman X Gradient
+    
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/cameraman_ygrad.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Cameraman Y Gradient
+    
+						</figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<p>
+		    After, we calculatate the magnitude with the following equation to get the final image, after an application of binary thresholding on the value 50:
+		</p>
+		<div align="middle">
+			<table style="width=100%">
+				<tr>
+					<td>					
+    					<img src="final_images/magnitude_formula.png" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Gradient Magnitude Formula
+    
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/cameraman_edges.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Edge Detected with Magnitude Equation
+						</figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<h4>
+            Part 1.2
+        </h4>				
+        <p>
+            We can improve our edge detection by blurring the initial image with a Gaussian filter, removing higher frequencies and thus, noise that the x and y gradients may pick up. After applying the previous edge detection filters and magnitude formula, we see that the resulting edges detected are much cleaner, pronounced, and have much less noise. 
+        </p>
+        <div align="middle">
+			<table style="width=100%">
+				<tr>
+					<td>					
+    					<img src="final_images/cameraman_blur.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Blurred Camerman After Gaussian Blur Application
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/cameraman_blurred_edges.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Edge Detection on Blurred Cameraman
+						</figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<p>
+		    Due to the associative nature of convolution, we can optimize our process by convolving the blur filters with the x and y gradient filters respectively. This reduces our overall time from having to convolve the image with the blur filter and then convolve once again with the gradient filters, to having just to convolve the image with a smaller convolution between gradient and blur filters. We see that there is no difference in quality between both methods.  
+		</p>
+		<div align="middle">
+			<table style="width=100%">
+				<tr>
+					<td>					
+    					<img src="final_images/cameraman_blurred_edges_1_conv.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Edges Detected with 2 Convolutions with Cameraman
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/cameraman_blurred_edges_2_conv.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Edges Detected with 1 Convolution with Cameraman
+						</figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
+        <h4>
+            Part 1.3
+        </h4>
+		<p>
+    	    With the ability to find the x and y gradient in an image, we can now automatically straighten images by pooling the arctan value of each paired x and y gradient value, representing the angle each pixel is directed towards. Those values in the gradients that fall within a small range of error for degrees of value -180, 90, 0, 90, and 180 represent either a horizontal or vertical line. By exhaustively rotating the image, we can find which rotation grants us the greatest amount of vertical and horizontal lines and that will be our straightened image. Unfortunately, our algorithm isn't infalliable. It fails for images whose subject are designed to be sightly slanted, such as the Leaning Tower of Pisa.
+        </p>
+		<div align="middle">
+			<table style="width=100%">
+				<tr>
+					<td>					
+    					<img src="final_images/facade.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Facade of a Building
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/rot_facade.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Facade With a Rotation of -3 Degrees
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/rot_of_-3_facade.png" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Histogram of Radians for a Rotation of -3 Degrees
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/facade0.png" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Histogram of Radians for a Rotation of 0 Degrees
+						</figcaption>
+					</td>
+					
+				</tr>
+				<tr>
+					<td>					
+    					<img src="final_images/x_rot.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Tilted X-shaped Buiding
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/x_rot_rot.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Tilted X-shaped Buiding With a Rotation of -20 Degrees
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/x_rot_rot_histo_-20.png" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Histogram of Radians for a Rotation of -20 Degrees
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/x_rot0.png" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Histogram of Radians for a Rotation of 0 Degrees
+						</figcaption>
+					</td>
+					
+				</tr>
+				<tr>
+					<td>					
+    					<img src="final_images/pisa.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Facade of a Building
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/pisa_rot.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Facade with a rotation of 2 degrees
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/pisa_rot_of_2.png" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Histogram of Radians for a Rotation of 2 Degrees
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/pisa0.png" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Histogram of Radians for a Rotation of 0 Degrees
+						</figcaption>
+					</td>
+					
+				</tr>
+			</table>
+		</div>
+		<h3>
+		    Part 2
+		</h3>													
+		<h4>
+		    Part 2.1    
+		</h4>
+		<p>
+		    Similar to how we were able to blur an image through a filter, we can sharpen with an unsharp mask filter! This simply involves subtracting the original image with a blurred version of itself, letting us retreieve the high frequency, salient details of an image. By adding this onto a blurry image, we can somewhat recover the lost details from the original blurring!
+		</p>
+		<div align="middle">
+			<table style="width=100%">
+				<tr>
+					<td>					
+    					<img src="final_images/taj.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Taj Mahal, unedited
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/taj_sharp.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Taj Mahal, one round of sharpening
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/taj_sharp_sharper.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Taj Mahal, two rounds of sharpening
+						</figcaption>
+					</td>
+				</tr>
+				<tr>
+					<td>					
+    					<img src="final_images/starfruit.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Starfruit, unedited
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/starfruit_sharp.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Starfruit, one round of sharpening
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/starfruit_sharp_sharper.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Starfruit, two rounds of sharpening
+						</figcaption>
+					</td>
+				</tr>
+			</table>
+			</div>
+			<p>
+			    We see that with one round of sharpening, the image's edges begin to look much more clear and pronounced. However, if we try to sharpen the sharpened image again, the image begins to look a bit oversaturated as we continuously add details. Not only that, noise is more pronounced as usually noise is high frequency.
+			</p>
+		<h4>
+		    Part 2.2
+		</h4>
+		<p>
+		    The idea behind hybrid images is that at close ranges, low frequencies are difficult to discern and high frequencies are visible, making high frequencies more visible. However, at farther ranges, the granularity of our vision/pixels becomes too large and high frequencies are no long as visible, and lower frequencies come into view. Thus, we can attempt to create this illusion by adding a low frequency image with a high one!
+		</p>
+		<div align="middle">
+		    <table style="width=100%">
+				<tr>
+					<td>					
+    					<img src="final_images/chihuahua.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            A Chihuahua
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/muffin.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            A Muffin
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/muffin_chihuahua.png" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Muffin and Chihuahua Blended Together; low res chihuahua, high res muffin
+						</figcaption>
+					</td>
+				</tr>
+				<tr>
+					<td>					
+    					<img src="final_images/frown.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Frowning Man
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/smile.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Smiling Man
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/sad_happy.png" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Smiling and Frowning man Blended; low res smiling, high res frowning
+						</figcaption>
+					</td>
+				</tr>
+				<tr>
+					<td>					
+    					<img src="final_images/dayhouse.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            House During Day
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/nighthouse.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            House During Night
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/blendhouse.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            House during Day and Night Blended; low res day, high res night
+						</figcaption>
+					</td>
+				</tr>
+			</table>
+			</div>
+		<p>
+		    Here, we provide the log Fourier Anlaysis on the chihuahua muffin hybrid image components:
+		</p>
+		<div align="middle">
+		    <table style="width=100%">
+				<tr>
+					<td>					
+    					<img src="final_images/log_chihuahua.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Log Magnitude of Fourier Transform for Chihuahua
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/log_muffin.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Log Magnitude of Fourier Transform for Muffin
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/log_gaussian.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Log Magnitude of Fourier Transform for Blurred Chihuahua
+						</figcaption>
+					</td>
+				</tr>
+				<tr>
+					<td>					
+    					<img src="final_images/log_laplacian.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Log Magnitude of Fourier Transform for High-Pass Muffin
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/log_hybrid.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Log Magnitude of Fourier Transform for Hybrid Image
+						</figcaption>
+					</td>
+				</tr>
+			</table>
+			</div>
+		<h4>
+		    Part 2.3
+		</h4>
+		<p>
+		    We can unravel the hybrid images with Gaussian and Laplacian stacks, separating the low and high frequency components. We expect to see Lincoln in the Gaussian stack for the following image, and a naked lady for the Laplacian. As for the hybrid, we expect to see a chihuahua for the Gaussian stack and a muffin for the Laplacian stack.
+		</p>
+			<div align="middle">
+		    <table style="width=100%">
+				<tr>
+					<td>					
+    					<img src="final_images/lincolngaussian_stack.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Gaussian Stack
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/lincolnlaplacian_norm_stack.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Laplacian Stack, normalized to be within [0, 1]
+						</figcaption>
+					</td>
+				</tr>
+				<tr>
+					<td>					
+    					<img src="final_images/chihuahuagaussian_stack.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Gaussian Stack
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/muffin_laplacian_norm_stack.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Laplacian Stack, normalized to be within [0, 1]
+						</figcaption>
+					</td>
+				</tr>
+			</table>
+			</div>
+		<h4>
+		    Part 2.4
+		</h4>
+		<p>
+		    We can now apply the same idea but to blend!
+		</p>
+		<div align="middle">
+		    <table style="width=100%">
+		        <tr>
+					<td>					
+    					<img src="final_images/apple.jpeg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Apple
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/orange.jpeg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Orange
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/orapple.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Orange Apple
+						</figcaption>
+					</td>
+				</tr>
+				<tr>
+					<td>					
+    					<img src="final_images/dayhouse.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            House in Day
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/nighthouse.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            House in Night
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/blendhouse.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Blended House
+						</figcaption>
+					</td>
+				</tr>
+				<tr>
+					<td>					
+    					<img src="final_images/hand.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            A Hand
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/face.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            A face
+						</figcaption>
+					</td>
+					<td>					
+    					<img src="final_images/handeye.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            A Hand Eye
+						</figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<p>
+		    Below is the Laplacian stack of the blended house
+		</p>
+		<div align="middle">
+		    <table style="width=100%">
+		        <tr>
+					<td>					
+    					<img src="final_images/laplacian_norm_stack_house.jpg" align="middle" width="400px" />
+    					<figcaption align="middle">
+                            Laplacian Stack of Blended House
+						</figcaption>
+					</td>
+				
+			</table>
+		</div>
+		<p>
+		    For me, it was extremeley interesting to see how a lot of the tools I use when drawing are truly implemented. For example, the brush tool is most likely a Gaussian filter with radius equal to the brush size, convolving across the area I trace it over. Being able to blend together these images and seeing these optical illusions I see on memes on Reddit all the time actually be made was also really interesting!
+		</p>
+		<br />
+																																						<br />
+																																					</body>
+																																				</html>
+
+
+
+
